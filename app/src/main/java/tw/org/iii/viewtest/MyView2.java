@@ -18,14 +18,14 @@ import java.util.LinkedList;
  */
 
 public class MyView2 extends View {
-    private LinkedList<HashMap<String,Float>> line;
+    private LinkedList<LinkedList<HashMap<String,Float>>> lines;
     private Paint paint;
 
     public MyView2(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         setBackgroundColor(Color.YELLOW);
 
-        line = new LinkedList<>();
+        lines = new LinkedList<>();
         paint = new Paint();
         paint.setColor(Color.RED);
         paint.setStrokeWidth(4);
@@ -36,11 +36,13 @@ public class MyView2 extends View {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
-        for (int i=1; i<line.size(); i++) {
-            HashMap<String,Float> p0 = line.get(i-1);
-            HashMap<String,Float> p1 = line.get(i);
-            canvas.drawLine(p0.get("x"), p0.get("y"),
-                    p1.get("x"), p1.get("y"), paint);
+        for(LinkedList<HashMap<String,Float>> line: lines) {
+            for (int i = 1; i < line.size(); i++) {
+                HashMap<String, Float> p0 = line.get(i - 1);
+                HashMap<String, Float> p1 = line.get(i);
+                canvas.drawLine(p0.get("x"), p0.get("y"),
+                        p1.get("x"), p1.get("y"), paint);
+            }
         }
 
     }
@@ -53,21 +55,22 @@ public class MyView2 extends View {
         String action = null;
         if (event.getAction() == MotionEvent.ACTION_DOWN){
             action = "Down";
-        }else if (event.getAction() == MotionEvent.ACTION_MOVE){
-            action = "Move";
-        }else if (event.getAction() == MotionEvent.ACTION_UP){
-            action = "UP";
-        }
-
-        if (action != null) {
-            Log.v("brad", action + ex + "x" + ey);
+            LinkedList<HashMap<String,Float>> line = new LinkedList<>();
 
             HashMap<String,Float> point = new HashMap<>();
             point.put("x", ex); point.put("y", ey);
             line.add(point);
-            invalidate();
+            lines.add(line);
 
+        }else if (event.getAction() == MotionEvent.ACTION_MOVE){
+            action = "Move";
+            HashMap<String,Float> point = new HashMap<>();
+            point.put("x", ex); point.put("y", ey);
+
+            lines.getLast().add(point);
+            invalidate();
         }
+
         return true; //super.onTouchEvent(event);
     }
 }
