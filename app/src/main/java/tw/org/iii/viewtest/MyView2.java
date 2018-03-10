@@ -47,6 +47,11 @@ public class MyView2 extends View {
 
     }
 
+    public void clear(){
+        lines.clear();
+        invalidate();
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         float ex = event.getX();
